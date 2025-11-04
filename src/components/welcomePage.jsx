@@ -1,5 +1,6 @@
-export default function welcome() {
+import { Link } from 'react-router-dom';
 
+export default function Welcome() {
     return (
         <div className="hero bg-base-200 min-h-screen">
             <div className="hero-content flex-col lg:flex-row">
@@ -13,9 +14,11 @@ export default function welcome() {
                         It's 2025 and new era is coming.
                         Join us to get superior patients data manager and analyzer for your medical facility
                     </p>
-                    <button className="btn btn-primary">Get Started</button>
+                    <Link to="/logreg">
+                        <button className="btn btn-primary">Get Started</button>
+                    </Link>
                 </div>
             </div>
         </div>
-    )
+    );
 }

@@ -1,17 +1,21 @@
-import './App.css'
+import './App.css';
 import "tailwindcss";
-import './components/welcomePage.jsx'
-import welcome from "./components/welcomePage.jsx";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+import Welcome from './components/welcomePage.jsx';
+import LogregPage from './components/logregPage.jsx';
 import Test from './components/test.jsx';
 
 function App() {
-
   return (
-      <>
-        {welcome()}
-        {/* <Test/> */}
-    </>
-  )
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Welcome />} />
+          <Route path="/logreg" element={<LogregPage />} />
+          {/* <Route path="/test" element={<Test />} /> */}
+        </Routes>
+      </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
