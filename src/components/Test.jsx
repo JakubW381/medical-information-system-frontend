@@ -1,17 +1,22 @@
 import api from "../util/Axios";
 
-const Login = async () => {
+
+export const Login = async ({email, password}) => {
+
+
     try {
-        const response = await api.post("/api/auth/login", { "email":"patient3@example.com", "password" : "patient123" }, {
+        const response = await api.post("/api/auth/login",
+            { "email": email, "password" : password }, {
             headers: {
                 'Content-Type': 'application/json'
             },
             withCredentials: true
         });
-        console.log(response);
-        navigate("/");
+        console.log("Yupi", response);
+        return true
     } catch (err) {
         console.log(err);
+        return false
     }
 }
 

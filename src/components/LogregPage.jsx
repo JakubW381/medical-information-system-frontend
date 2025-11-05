@@ -1,4 +1,26 @@
+import {Login} from "./Test.jsx";
+import {useState} from "react";
+import { useNavigate } from "react-router-dom";
+
+
 export default function LogregPage() {
+    const [mail, setMail] = useState("")
+    const [password, setPassword] = useState("")
+    const navigate = useNavigate();
+
+    const handleLoginClick = async () => {
+        const success = await Login({
+            email: mail,
+            password: password
+        });
+        if (success) {
+            navigate("/");
+        } else {
+            alert("Email or password is incorrect");
+        }
+    }
+
+
     return (
         <div className="flex flex-col min-h-screen">
         <main className="flex flex-1 justify-center items-center font-mono font-bold">
@@ -17,7 +39,7 @@ export default function LogregPage() {
                             <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                         </g>
                     </svg>
-                    <input type="email" placeholder="mail@site.com" required/>
+                    <input onChange={e => setMail(e.target.value)} type="email" placeholder="mail@site.com" required/>
                 </label>
                 <div className="validator-hint hidden">Enter valid email address</div>
                 <p className="validator-hint">
@@ -40,19 +62,18 @@ export default function LogregPage() {
                         </g>
                     </svg>
                     <input
+                        onChange={e => {setPassword(e.target.value)}}
                         type="password"
                         required
                         placeholder="Password"
-                        minLength="8"
-                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-                        title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
+
                     />
                 </label>
                 <p className="validator-hint hidden">
                     Must be more than 8 characters, including
                     <br/>At least one number <br/>At least one lowercase letter <br/>At least one uppercase letter
                 </p>
-                <button className="btn btn-dash btn-success m-3">Sign In</button>
+                <button onClick={handleLoginClick} className="btn btn-dash btn-success m-3">Sign In</button>
             </div>
 
 
