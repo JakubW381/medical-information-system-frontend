@@ -6,7 +6,7 @@ export default function Welcome() {
             <div className="hero-content flex-col lg:flex-row">
                 <img
                     src="/public/medical-information-systems-high-resolution-logo-transparent.png"
-                    className="max-w-sm rounded-lg shadow-2xl"
+                    className="max-w-sm rounded-lg"
                 />
                 <div>
                     <h1 className="text-5xl font-bold">Innovation is here</h1>

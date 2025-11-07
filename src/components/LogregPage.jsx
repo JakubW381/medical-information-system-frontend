@@ -14,7 +14,7 @@ export default function LogregPage() {
             password: password
         });
         if (success) {
-            navigate("/");
+            navigate("/main");
         } else {
             alert("Email or password is incorrect");
         }
