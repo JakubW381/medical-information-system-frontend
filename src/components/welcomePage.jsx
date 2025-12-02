@@ -5,7 +5,7 @@ export default function Welcome() {
         <div className="hero bg-base-200 min-h-screen">
             <div className="hero-content flex-col lg:flex-row">
                 <img
-                    src="/public/medical-information-systems-high-resolution-logo-transparent.png"
+                    src="/public/logo.png"
                     className="max-w-sm rounded-lg"
                 />
                 <div>
@@ -14,7 +14,7 @@ export default function Welcome() {
                         It's 2025 and new era is coming.
                         Join us to get superior patients data manager and analyzer for your medical facility
                     </p>
-                    <Link to="/logreg">
+                    <Link to="/sign-in">
                         <button className="btn btn-primary">Get Started</button>
                     </Link>
                 </div>
