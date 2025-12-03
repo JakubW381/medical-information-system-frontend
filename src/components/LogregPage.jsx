@@ -1,5 +1,5 @@
 import {Login} from "./Test.jsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 
 
@@ -20,6 +20,20 @@ export default function LogregPage() {
         }
     }
 
+    useEffect(() =>{
+        const isLogged = async () =>{
+            try{
+                const response = await api.get("api/auth/role", { withCredentials : true });
+                console.log(response.data)
+                if(response.data){
+                    navigate("/main")
+                }
+            }catch(err){
+                console.log("Not logged in — stay on login page")
+            }
+        }
+        isLogged()
+    },[])
 
     return (
         <div className="flex flex-col min-h-screen">

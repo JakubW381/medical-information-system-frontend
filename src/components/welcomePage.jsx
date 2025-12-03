@@ -5,7 +5,7 @@ export default function Welcome() {
         <div className="hero bg-base-200 min-h-screen">
             <div className="hero-content flex-col lg:flex-row">
                 <img
-                    src="/public/logo.png"
+                    src="/logo.png"
                     className="max-w-sm rounded-lg"
                 />
                 <div>

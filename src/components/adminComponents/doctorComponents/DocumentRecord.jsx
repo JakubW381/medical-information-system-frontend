@@ -5,17 +5,17 @@ export default function DocumentRecord({ document }) {
 
   const handleClick = () => {
     console.log("doc click");
-    // navigate(`/documents/${document.documentId}`); // jak chcesz routing
   };
 
   return (
     <div
       className="card flex flex-row bg-base-300 shadow-md rounded-lg p-4 
                  hover:shadow-xl hover:bg-green-600 transition cursor-pointer 
-                 w-full h-60"
+                 w-full h-70"
       onClick={handleClick}
     >
-      <div className="w-32 h-50 mr-4 flex-shrink-0">
+      {/* LEFT SIDE IMAGE */}
+      <div className="w-32 h-full mr-4 flex-shrink-0">
         <img
           src={document.thumbnailSignedURL}
           alt="Document thumbnail"
@@ -23,7 +23,8 @@ export default function DocumentRecord({ document }) {
         />
       </div>
 
-      <div className="flex flex-col  overflow-hidden">
+      {/* RIGHT SIDE CONTENT */}
+      <div className="flex flex-col overflow-hidden w-full">
         <h2 className="text-lg font-bold whitespace-nowrap overflow-hidden text-ellipsis">
           {document.patient.name} {document.patient.lastName}
         </h2>
@@ -37,9 +38,21 @@ export default function DocumentRecord({ document }) {
         </p>
 
         {document.tags && document.tags.length > 0 && (
-          <p className="text-sm  text-ellipsis">
-            <strong>Tags:</strong> {document.tags.slice(0, 10).join(", ")}
-          </p>
+          <div className="flex flex-col w-full mt-2">
+            <strong className="mb-1">Tags:</strong>
+
+            <div className="flex flex-wrap gap-2 max-h-36 overflow-y-auto pr-1">
+              {document.tags.slice(0, 10).map((tag, i) => (
+                <span
+                  key={i}
+                  className="px-2 py-1 bg-base-100 rounded-md text-xs font-medium 
+                             border border-base-300 shadow-sm"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
         )}
       </div>
     </div>

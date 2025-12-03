@@ -62,7 +62,7 @@ export default function Layout() {
                         {safeUser.role === "ROLE_DOCTOR" && (
                             <>
                                 <button className={isActive("/patients")} onClick={() => navigate("/patients")}>Patients</button>
-                                <button className={isActive("/doctor-profile")}>Doctor Profile</button>
+                                <button className={isActive("/patients/register")} onClick={() => navigate("/patients/register")}>Register Patient</button>
                             </>
                         )}
                         {safeUser.role === "ROLE_ADMIN" && (
