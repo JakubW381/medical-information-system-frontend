@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 
 
-export default function LogregPage() {
+export default function LoginPage() {
     const [mail, setMail] = useState("")
     const [password, setPassword] = useState("")
     const navigate = useNavigate();

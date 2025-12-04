@@ -54,13 +54,13 @@ export default function RegisterPatientPage() {
                 lastName,
                 email,
                 pesel,
-                dateOfBirth,
+                dateOfBirth: dateOfBirth + "T00:00:00",
                 gender,
                 address,
                 bloodType,
-                allergies: allergies.split(";").map(a => a.trim()).filter(a => a),
+                allergies: allergies.trim(),
                 chronicDiseases,
-                medications: medications.split(";").map(m => m.trim()).filter(m => m),
+                medications: medications.trim(),
                 insuranceNumber,
             };
 

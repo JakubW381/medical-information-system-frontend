@@ -91,12 +91,13 @@ export default function PatientPage() {
         }
     };
 
-
-
-
     useEffect(() => {
         fetchPatientDocuments();
-    }, [page, year, search]);
+    }, []);
+
+    // useEffect(() => {
+    //     fetchPatientDocuments();
+    // }, [page, year, search]);
 
     useEffect(() => {
         fetchPatientInfo();

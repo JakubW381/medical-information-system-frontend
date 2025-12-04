@@ -8,15 +8,14 @@ export default function Layout() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const isActive = (path) => location.pathname === path ? "btn btn-success btn-sm" : "btn btn-ghost btn-sm";
-
+    const isActive = (path) =>
+        location.pathname === path
+            ? "btn btn-success btn-sm md:btn-md text-base md:text-lg font-semibold"
+            : "btn btn-ghost btn-sm md:btn-md text-base md:text-lg font-semibold";
 
     const handleLogout = async () => {
         try {
-            const response = await api.post("/api/auth/logout", {}, {
-                withCredentials: true
-            });
-            console.log("Logout response:", response);
+            await api.post("/api/auth/logout", {}, { withCredentials: true });
             setSafeUser("");
             navigate("/");
         } catch (err) {
@@ -27,32 +26,29 @@ export default function Layout() {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await api.get("/api/auth/safe-user", {
-                    withCredentials: true
-                });
-
+                const response = await api.get("/api/auth/safe-user", { withCredentials: true });
                 setSafeUser(response.data);
             } catch (err) {
-                navigate("/sign-in")
-                console.log("Błąd przy pobieraniu danych użytkownika:", err);
+                navigate("/sign-in");
             }
         };
-
         fetchUserInfo();
     }, []);
 
     return (
         <div className="flex flex-col min-h-screen">
-            <div className="navbar bg-base-100 shadow-md px-6 py-2 sticky top-0 z-50">
-                <div className="flex-1 flex items-center gap-6">
+            {/* Navbar */}
+            <div className="navbar bg-base-100 shadow-md px-4 md:px-6 py-2 sticky top-0 z-50">
+                <div className="flex-1 flex items-center gap-4 md:gap-6">
                     <img
                         src="/logo.png"
-                        className="max-w-[80px] rounded-lg cursor-pointer"
+                        className="max-w-[60px] md:max-w-[80px] rounded-lg cursor-pointer"
                         onClick={() => navigate("/main")}
                         alt="HIS Logo"
                     />
 
-                    <div className="hidden md:flex gap-4">
+                    {/* Desktop menu */}
+                    <div className="hidden md:flex gap-2 md:gap-4">
                         {safeUser.role === "ROLE_USER" && (
                             <>
                                 <button className={isActive("/patient-info")}>Patient Info</button>
@@ -74,42 +70,84 @@ export default function Layout() {
                             </>
                         )}
                     </div>
+
+                    {/* Mobile menu dropdown */}
+                    <div className="dropdown md:hidden">
+                        <label tabIndex={0} className="btn btn-ghost btn-sm m-1">Menu</label>
+                        <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                            {safeUser.role === "ROLE_USER" && (
+                                <>
+                                    <li><button onClick={() => navigate("/patient-info")}>Patient Info</button></li>
+                                    <li><button onClick={() => navigate("/patient-documents")}>Documents</button></li>
+                                </>
+                            )}
+                            {safeUser.role === "ROLE_DOCTOR" && (
+                                <>
+                                    <li><button onClick={() => navigate("/patients")}>Patients</button></li>
+                                    <li><button onClick={() => navigate("/patients/register")}>Register Patient</button></li>
+                                </>
+                            )}
+                            {safeUser.role === "ROLE_ADMIN" && (
+                                <>
+                                    <li><button onClick={() => navigate("/patients")}>Patients</button></li>
+                                    <li><button onClick={() => navigate("/doctors")}>Doctors</button></li>
+                                    <li><button onClick={() => navigate("/documents")}>Documents</button></li>
+                                    <li><button onClick={() => navigate("/dashboard")}>Dashboard</button></li>
+                                </>
+                            )}
+                        </ul>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                    {safeUser.role === "ROLE_DOCTOR" && (
-                        <button className="btn btn-outline btn-sm">Your Profile</button>
-                    )}
-                    <p className="hidden sm:block text-sm font-medium">{safeUser.name} {safeUser.lastName}</p>
-
-                    <div className="dropdown dropdown-end">
-                        <div tabIndex={0} className="btn btn-ghost btn-circle avatar">
-                            <div className="w-10 rounded-full border border-base-300">
+                {/* User info & avatar */}
+                <div className="flex items-center gap-2 md:gap-4">
+                    {/* Desktop buttons */}
+                    <div className="hidden md:flex items-center gap-2">
+                        <button className="btn btn-outline btn-sm md:btn-md btn-error text-sm md:text-base" onClick={handleLogout}>Logout</button>
+                        {safeUser.role === "ROLE_DOCTOR" && (
+                            <button className={"btn btn-outline btn-sm md:btn-md text-sm md:text-base " + isActive("/doctor/profile")} onClick={() => navigate("/doctor/profile")}>Your Profile</button>
+                        )}
+                        <p className="hidden sm:block text-sm md:text-base font-medium">{safeUser.name} {safeUser.lastName}</p>
+                        <div className="avatar">
+                            <div className="w-10 md:w-12 rounded-xl border border-base-300">
                                 <img
                                     alt="avatar"
                                     src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
                                 />
                             </div>
                         </div>
-                        <ul className="menu menu-sm dropdown-content bg-base-100 rounded-box shadow mt-2 w-40 p-2">
-                            <li>
-                                <button onClick={handleLogout} className="w-full text-left">
-                                    Logout
-                                </button>
-                            </li>
+                    </div>
+
+                    {/* Mobile avatar dropdown */}
+                    <div className="dropdown dropdown-end md:hidden">
+                        <label tabIndex={0} className="cursor-pointer">
+                            <div className="avatar">
+                                <div className="w-10 rounded-xl border border-base-300">
+                                    <img
+                                        alt="avatar"
+                                        src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                                    />
+                                </div>
+                            </div>
+                        </label>
+                        <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-36">
+                            {safeUser.role === "ROLE_DOCTOR" && (
+                                <li><button onClick={() => navigate("/doctor/profile")}>Your Profile</button></li>
+                            )}
+                            <li><button onClick={handleLogout}>Logout</button></li>
                         </ul>
                     </div>
                 </div>
             </div>
 
-            <main className="flex-grow flex flex-col items-center">
+            {/* Main content */}
+            <main className="flex-grow flex flex-col items-center w-full">
                 <Outlet />
             </main>
 
-            <footer className="footer sm:footer-horizontal footer-center bg-base-300 text-base-content p-4">
-                <aside>
-                    <p>Copyright © {new Date().getFullYear()} - Medical Information Systems Inc.</p>
-                </aside>
+            {/* Footer */}
+            <footer className="footer sm:footer-horizontal footer-center bg-base-300 text-base-content p-4 mt-auto">
+                <p>Copyright © {new Date().getFullYear()} - Medical Information Systems Inc.</p>
             </footer>
         </div>
     );

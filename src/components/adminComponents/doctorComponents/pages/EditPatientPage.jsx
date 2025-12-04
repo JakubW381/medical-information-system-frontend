@@ -33,7 +33,7 @@ export default function EditPatientPage() {
         // else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
         //     newErrors.email = "Invalid email format.";
 
-        if(!/^\d{9}$/.test(phoneNumber)) newErrors.phoneNumber = "Phone Number must be 9 digits long"
+        if(!/^\d{9}$/.test(phoneNumber.replaceAll(" ", ""))) newErrors.phoneNumber = "Phone Number must be 9 digits long"
 
         if (!pesel.trim()) newErrors.pesel = "PESEL is required.";
         else if (!/^\d{11}$/.test(pesel))
@@ -50,34 +50,36 @@ export default function EditPatientPage() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const registerPatient = async (e) => {
+    const updatePatient = async (e) => {
         e.preventDefault();
         if (!validate()) return;
 
         try {
             const payload = {
+                patientId,
                 name,
                 lastName,
-                email,
+                // email,
                 pesel,
-                dateOfBirth,
+                phoneNumber,
+                dateOfBirth : dateOfBirth + "T00:00:00",
                 gender,
                 address,
                 bloodType,
-                allergies: allergies.split(";").map(a => a.trim()).filter(a => a),
+                allergies: allergies.trim(),
                 chronicDiseases,
-                medications: medications.split(";").map(m => m.trim()).filter(m => m),
+                medications: medications.trim(),
                 insuranceNumber,
             };
 
-            const response = await api.post("/api/doc/register-patient", payload, {
+            const response = await api.post("/api/doc/update-patient", payload, {
                 withCredentials: true,
             });
 
             console.log(response.data);
             navigate("/patients");
         } catch (err) {
-            console.log("Błąd przy rejestracji pacjenta: " + err);
+            console.log("Błąd przy edycji pacjenta: " + err);
         }
     };
 
@@ -111,7 +113,7 @@ export default function EditPatientPage() {
     return (
         <div className="flex w-full justify-center py-10">
             <form
-                onSubmit={registerPatient}
+                onSubmit={updatePatient}
                 className="card bg-base-200 shadow-xl p-10 w-full max-w-2xl flex flex-col gap-6"
             >
                 <h1 className="text-3xl font-bold text-center mb-2">
@@ -161,7 +163,7 @@ export default function EditPatientPage() {
                 <div>
                     <label className="font-medium">Phone Number</label>
                     <input
-                        type="text"
+                        type="phone"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
                         className="input input-bordered w-full"
