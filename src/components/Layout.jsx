@@ -69,6 +69,11 @@ export default function Layout() {
                                 <button className={isActive("/dashboard")}>Dashboard</button>
                             </>
                         )}
+                        {safeUser.role === "ROLE_LAB" && (
+                            <>
+                                <button className={isActive("/lab/upload")} onClick={() => navigate("/lab/upload")}>Upload Document</button>
+                            </>
+                        )}
                     </div>
 
                     {/* Mobile menu dropdown */}
