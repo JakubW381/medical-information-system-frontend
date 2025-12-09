@@ -12,6 +12,7 @@ import RegisterPatientPage from './components/adminComponents/doctorComponents/p
 import EditPatientPage from './components/adminComponents/doctorComponents/pages/EditPatientPage.jsx';
 import DoctorSideProfile from './components/adminComponents/doctorComponents/pages/DoctorSideProfile.jsx';
 import LoginPage from './components/LoginPage.jsx';
+import LabPage from './components/labComponents/LabPage.jsx';
 // import Test from './components/test.jsx';
 
 function App() {
@@ -23,17 +24,16 @@ function App() {
 
         <Route element={<Layout />}>
           <Route path="/main" element={<MainPage />} />
+
+          {/* DOCTOR PAGE */}
           <Route path="/patients" element={<PatientsPage />} />
           <Route path="/patients/register" element={<RegisterPatientPage />} />
           <Route path="/patient/:patientId/update" element={<EditPatientPage />} />
           <Route path="/patient/:patientId" element={<PatientPage />} />
           <Route path="/doctor/profile" element={<DoctorSideProfile />} />
+          {/* LAB PAGE */}
+          <Route path="/lab/upload" element={<LabPage/>} />
         </Route>
-
-
-
-
-
         {/* <Route path="/test" element={<Test />} /> */}
       </Routes>
     </BrowserRouter>
