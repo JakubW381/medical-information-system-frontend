@@ -11,6 +11,7 @@ import PatientPage from './components/adminComponents/doctorComponents/pages/Pat
 import RegisterPatientPage from './components/adminComponents/doctorComponents/pages/RegisterPatientPage.jsx';
 import EditPatientPage from './components/adminComponents/doctorComponents/pages/EditPatientPage.jsx';
 import DoctorSideProfile from './components/adminComponents/doctorComponents/pages/DoctorSideProfile.jsx';
+import PatientSideProfile from './components/PatientSideProfile.jsx';
 import LoginPage from './components/LoginPage.jsx';
 // import Test from './components/test.jsx';
 
@@ -27,6 +28,7 @@ function App() {
           <Route path="/patients/register" element={<RegisterPatientPage />} />
           <Route path="/patient/:patientId/update" element={<EditPatientPage />} />
           <Route path="/patient/:patientId" element={<PatientPage />} />
+          <Route path="/patient-info" element={<PatientSideProfile />} />
           <Route path="/doctor/profile" element={<DoctorSideProfile />} />
         </Route>
 
