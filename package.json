@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@cornerstonejs/core": "^4.13.7",
+    "@cornerstonejs/dicom-image-loader": "^4.13.7",
+    "@cornerstonejs/nifti-volume-loader": "^4.13.7",
+    "@cornerstonejs/tools": "^4.13.7",
     "@tailwindcss/vite": "^4.1.16",
     "axios": "^1.13.0",
     "react": "^19.1.1",

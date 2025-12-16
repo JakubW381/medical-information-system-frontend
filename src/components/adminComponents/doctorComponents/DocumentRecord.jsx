@@ -1,10 +1,17 @@
 import { useNavigate } from "react-router-dom";
+import {fetchDocumentBase64} from "../../../util/FilesReader.jsx";
+import cornerstoneDICOMImageLoader from "@cornerstonejs/dicom-image-loader/imageLoader";
+import {useState} from "react";
 
 export default function DocumentRecord({ document }) {
   const navigate = useNavigate();
 
-  const handleClick = () => {
+  const [openedFile, setOpenedFile] = useState(null);
+
+  const handleClick = async () => {
     console.log("doc click");
+    const file = await fetchDocumentBase64(document.id)
+    setOpenedFile(file)
   };
 
   return (
@@ -55,6 +62,33 @@ export default function DocumentRecord({ document }) {
           </div>
         )}
       </div>
+      {openedFile && (
+          <div className="mt-4 p-4 bg-base-200 rounded-lg">
+            {openedFile.mimeType.startsWith("image/") && (
+                <img
+                    src={`data:${openedFile.mimeType};base64,${openedFile.base64}`}
+                    alt="file"
+                    className="max-w-full"
+                />
+            )}
+
+            {openedFile.mimeType === "application/pdf" && (
+                <embed
+                    src={`data:application/pdf;base64,${openedFile.base64}`}
+                    className="w-full h-[80vh]"
+                />
+            )}
+
+            {openedFile.mimeType === "application/dicom" && (
+                <DicomViewer base64={openedFile.base64} />
+            )}
+
+            {openedFile.mimeType === "unknown" && (
+                <p>Unknown file type</p>
+            )}
+          </div>
+      )}
     </div>
+
   );
 }
