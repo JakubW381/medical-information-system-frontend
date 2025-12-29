@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../../util/Axios";
 import DocumentRecord from "../DocumentRecord";
 import { useRef } from "react";
+import { doctorFetchDocumentBase64 } from "../../../../util/FilesReader.jsx"
 
 export default function PatientPage() {
     const { patientId } = useParams();
@@ -223,7 +224,7 @@ export default function PatientPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {patientDocuments.totalElements > 0 ? (
                         patientDocuments.items.map((document) => (
-                            <DocumentRecord key={document.id} document={document} />
+                            <DocumentRecord key={document.id} document={document} fetchFun={doctorFetchDocumentBase64} />
                         ))
                     ) : (
                         <p className="text-center col-span-full text-gray-500 mt-4">No documents available.</p>

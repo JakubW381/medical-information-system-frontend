@@ -2,6 +2,7 @@
 // import react from '@vitejs/plugin-react';
 // import { viteCommonjs } from '@originjs/vite-plugin-commonjs';
 import axios from "axios";
+import api from "./Axios";
 
 export function cleanBase64(b64) {
     return b64.includes(",") ? b64.split(",")[1] : b64;
@@ -48,10 +49,10 @@ export function base64ToBlob(base64, mimeType) {
     return new Blob([bytes], {type: mimeType})
 }
 
-export async function fetchDocumentBase64(id) {
+export async function doctorFetchDocumentBase64(id) {
     try {
-        const res = await axios.get(`http://localhost:8080/doc/patient/document/${id}`, {
-            responseType: "text"
+        const res = await api.get(`api/doc/patient/document/${id}`, {
+            withCredentials: true
         });
         const rawBase64 = res.data;
         console.log("RAW:", rawBase64);
@@ -63,7 +64,22 @@ export async function fetchDocumentBase64(id) {
     } catch (error) {
         console.log(error)
     }
+}
 
+export async function userFetchDocumentBase64(id) {
+    try {
+        const res = await api.get(`api/user/document/${id}`, {
+            withCredentials: true
+        });
+        const rawBase64 = res.data;
+        console.log("RAW:", rawBase64);
+        console.log("RAW RESPONSE:", res.data);
 
+        const mime = detectFileType(clean);
+
+        return {base64: clean, mimeType: mime};
+    } catch (error) {
+        console.log(error)
+    }
 }
 

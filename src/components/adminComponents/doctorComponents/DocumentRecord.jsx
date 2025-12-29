@@ -1,16 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import {fetchDocumentBase64} from "../../../util/FilesReader.jsx";
-import cornerstoneDICOMImageLoader from "@cornerstonejs/dicom-image-loader/imageLoader";
 import {useState} from "react";
 
-export default function DocumentRecord({ document }) {
+export default function DocumentRecord({ document, fetchFun }) {
   const navigate = useNavigate();
 
   const [openedFile, setOpenedFile] = useState(null);
 
   const handleClick = async () => {
     console.log("doc click");
-    const file = await fetchDocumentBase64(document.id)
+    const file = await fetchFun(document.id)
     setOpenedFile(file)
   };
 
