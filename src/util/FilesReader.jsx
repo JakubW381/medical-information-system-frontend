@@ -1,7 +1,7 @@
 // import { defineConfig } from 'vite';
 // import react from '@vitejs/plugin-react';
 // import { viteCommonjs } from '@originjs/vite-plugin-commonjs';
-import axios from "axios";
+//import axios from "axios";
 import api from "./Axios";
 
 export function cleanBase64(b64) {
@@ -54,15 +54,15 @@ export async function doctorFetchDocumentBase64(id) {
         const res = await api.get(`api/doc/patient/document/${id}`, {
             withCredentials: true
         });
+
         const rawBase64 = res.data;
-        console.log("RAW:", rawBase64);
-        console.log("RAW RESPONSE:", res.data);
+        const clean = cleanBase64(rawBase64);
 
         const mime = detectFileType(clean);
 
-        return {base64: clean, mimeType: mime};
+        return { base64: clean, mimeType: mime };
     } catch (error) {
-        console.log(error)
+        console.error("Błąd podczas pobierania dokumentu (Doctor):", error);
     }
 }
 
@@ -71,15 +71,16 @@ export async function userFetchDocumentBase64(id) {
         const res = await api.get(`api/user/document/${id}`, {
             withCredentials: true
         });
+
         const rawBase64 = res.data;
-        console.log("RAW:", rawBase64);
-        console.log("RAW RESPONSE:", res.data);
+
+        const clean = cleanBase64(rawBase64);
 
         const mime = detectFileType(clean);
 
-        return {base64: clean, mimeType: mime};
+        return { base64: clean, mimeType: mime };
     } catch (error) {
-        console.log(error)
+        console.error("Błąd podczas pobierania dokumentu (User):", error);
     }
 }
 
