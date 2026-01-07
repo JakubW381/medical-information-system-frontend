@@ -14,6 +14,8 @@ import DoctorSideProfile from './components/adminComponents/doctorComponents/pag
 import PatientSideProfile from './components/PatientSideProfile.jsx';
 import LoginPage from './components/LoginPage.jsx';
 import LabPage from './components/labComponents/LabPage.jsx';
+import PatientDocuments from "./components/patientComponents/PatientDocuments.jsx";
+import PatientInfo from "./components/patientComponents/PatientInfo.jsx";
 // import Test from './components/test.jsx';
 
 function App() {
@@ -25,6 +27,10 @@ function App() {
 
         <Route element={<Layout />}>
           <Route path="/main" element={<MainPage />} />
+
+          {/* PATEIENT PAGE */}
+          <Route path="/patient-info" element={<PatientInfo/>} />
+          <Route path="/patient-documents" element={<PatientDocuments/>}/>
 
           {/* DOCTOR PAGE */}
           <Route path="/patients" element={<PatientsPage />} />
