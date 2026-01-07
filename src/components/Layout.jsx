@@ -51,8 +51,8 @@ export default function Layout() {
                     <div className="hidden md:flex gap-2 md:gap-4">
                         {safeUser.role === "ROLE_USER" && (
                             <>
-                                <button className={isActive("/patient-info")}>Patient Info</button>
-                                <button className={isActive("/patient-documents")}>Documents</button>
+                                <button className={isActive("/patient-info")} onClick={() => navigate("/patient-info")}>Patient Info</button>
+                                <button className={isActive("/patient-documents")} onClick={() => navigate("/patient-documents")}>Documents</button>
                             </>
                         )}
                         {safeUser.role === "ROLE_DOCTOR" && (
