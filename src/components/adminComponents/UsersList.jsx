@@ -34,6 +34,79 @@ const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, loading }) => {
     );
 };
 
+// Custom Message Modal Component
+const MessageModal = ({ isOpen, onClose, onSend, loading, recipientName }) => {
+    const [subject, setSubject] = useState("");
+    const [content, setContent] = useState("");
+
+    // Reset fields when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            setSubject("");
+            setContent("");
+        }
+    }, [isOpen]);
+
+    if (!isOpen) return null;
+
+    const handleSubmit = () => {
+        if (!subject || !content) {
+            alert("Please fill in both subject and content");
+            return;
+        }
+        onSend({ subject, content });
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+            <div className="bg-base-100 rounded-xl shadow-2xl w-full max-w-lg border border-base-200 p-6 flex flex-col gap-4 animate-in fade-in zoom-in duration-200">
+                <h3 className="text-xl font-bold text-primary">Message to {recipientName}</h3>
+                <div className="form-control w-full">
+                    <label className="label">
+                        <span className="label-text">Subject</span>
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Type subject here"
+                        className="input input-bordered w-full"
+                        value={subject}
+                        onChange={(e) => setSubject(e.target.value)}
+                        disabled={loading}
+                    />
+                </div>
+                <div className="form-control w-full">
+                    <label className="label">
+                        <span className="label-text">Message Content</span>
+                    </label>
+                    <textarea
+                        className="textarea textarea-bordered h-32"
+                        placeholder="Type your message here"
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        disabled={loading}
+                    ></textarea>
+                </div>
+                <div className="flex justify-end gap-3 mt-2">
+                    <button
+                        className="btn btn-ghost btn-sm"
+                        onClick={onClose}
+                        disabled={loading}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        className="btn btn-primary btn-sm"
+                        onClick={handleSubmit}
+                        disabled={loading}
+                    >
+                        {loading ? <span className="loading loading-spinner loading-xs"></span> : "Send Message"}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export default function UsersList() {
     const [users, setUsers] = useState([]);
     const [totalPages, setTotalPages] = useState(0);
@@ -46,6 +119,10 @@ export default function UsersList() {
     // Delete modal state
     const [deleteModal, setDeleteModal] = useState({ isOpen: false, userId: null });
     const [deleteLoading, setDeleteLoading] = useState(false);
+
+    // Message modal state
+    const [messageModal, setMessageModal] = useState({ isOpen: false, userEmail: null, userName: null });
+    const [messageLoading, setMessageLoading] = useState(false);
 
     const [filters, setFilters] = useState({
         name: "",
@@ -124,6 +201,38 @@ export default function UsersList() {
         setDeleteModal({ isOpen: false, userId: null });
     };
 
+    const openMessageModal = (user) => {
+        setMessageModal({
+            isOpen: true,
+            userEmail: user.email,
+            userName: `${user.name} ${user.lastName}`
+        });
+    };
+
+    const closeMessageModal = () => {
+        setMessageModal({ isOpen: false, userEmail: null, userName: null });
+    };
+
+    const handleSendMessage = async ({ subject, content }) => {
+        if (!messageModal.userEmail) return;
+        setMessageLoading(true);
+        try {
+            await api.post("/api/admin/send-message", {
+                email: messageModal.userEmail,
+                subject,
+                content
+            }, { withCredentials: true });
+
+            alert("Message sent successfully!");
+            closeMessageModal();
+        } catch (err) {
+            console.error("Error sending message:", err);
+            alert("Failed to send message: " + (err.response?.data || err.message));
+        } finally {
+            setMessageLoading(false);
+        }
+    };
+
     const handleConfirmDelete = async () => {
         if (!deleteModal.userId) return;
         setDeleteLoading(true);
@@ -150,6 +259,14 @@ export default function UsersList() {
                 onClose={closeDeleteModal}
                 onConfirm={handleConfirmDelete}
                 loading={deleteLoading}
+            />
+
+            <MessageModal
+                isOpen={messageModal.isOpen}
+                onClose={closeMessageModal}
+                onSend={handleSendMessage}
+                loading={messageLoading}
+                recipientName={messageModal.userName}
             />
 
             {/* Top Bar: Filters */}
@@ -239,7 +356,16 @@ export default function UsersList() {
                                     <td className="text-xs opacity-70">
                                         {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}
                                     </td>
-                                    <td className="text-right">
+                                    <td className="text-right whitespace-nowrap">
+                                        <button
+                                            className="btn btn-ghost btn-xs text-info hover:bg-info/10 mr-1"
+                                            onClick={() => openMessageModal(user)}
+                                            title="Send Message"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                                            </svg>
+                                        </button>
                                         <button
                                             className="btn btn-ghost btn-xs text-error hover:bg-error/10"
                                             onClick={() => openDeleteModal(user.id)}
