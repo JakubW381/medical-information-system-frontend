@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../../util/Axios.js";
+import UsersList from "./UsersList";
 
 
 const FormInput = ({ label, name, type = "text", placeholder, value, onChange }) => (
@@ -114,87 +115,85 @@ export default function AdminDashboard() {
 
             {activeModal && (
                 <div className="modal modal-open backdrop-blur-sm">
-                    <div className="modal-box max-w-2xl bg-base-100 shadow-2xl">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeModal}>✕</button>
+                    <div className={`modal-box bg-base-100 shadow-2xl ${activeModal === "users" ? "max-w-7xl h-[85vh] p-6" : "max-w-2xl"}`}>
+                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-50" onClick={closeModal}>✕</button>
 
-                        <form onSubmit={(e) => handleSubmit(e,
-                            activeModal === "registerDoctor" ? "/api/admin/register-doctor" :
-                                activeModal === "attachDoctor" ? "/api/admin/user-doctor" :
-                                    activeModal === "attachPatient" ? "/api/admin/user-patient" :
-                                        activeModal === "logs" ? "/api/admin/logs" : "/api/admin/users"
-                        )}>
-
-                            <h3 className="text-2xl font-bold mb-6 text-center">
-                                {activeModal.replace(/([A-Z])/g, ' $1').toUpperCase()}
-                            </h3>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[65vh] overflow-y-auto p-1">
-                                {activeModal === "registerDoctor" && (
-                                    <>
-                                        <FormInput label="Name" name="name" value={formData.name} onChange={handleChange} />
-                                        <FormInput label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} />
-                                        <FormInput label="Email" name="email" type="email" value={formData.email} onChange={handleChange} />
-                                        <FormInput label="PESEL" name="pesel" value={formData.pesel} onChange={handleChange} />
-                                        <FormInput label="Specialization" name="specialization" value={formData.specialization} onChange={handleChange} />
-                                        <FormInput label="Department" name="department" value={formData.department} onChange={handleChange} />
-                                        <FormInput label="Position" name="position" value={formData.position} onChange={handleChange} />
-                                        <FormInput label="License No." name="professionalLicenseNumber" value={formData.professionalLicenseNumber} onChange={handleChange} />
-                                    </>
-                                )}
-
-                                {activeModal === "attachDoctor" && (
-                                    <>
-                                        <FormInput label="First Name" name="name" value={formData.name} onChange={handleChange} />
-                                        <FormInput label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} />
-                                        <FormInput label="Specialization" name="specialization" value={formData.specialization} onChange={handleChange} />
-                                        <FormInput label="Department" name="department" value={formData.department} onChange={handleChange} />
-                                        <FormInput label="Position" name="position" value={formData.position} onChange={handleChange} />
-                                        <FormInput label="License No." name="professionalLicenseNumber" value={formData.professionalLicenseNumber} onChange={handleChange} />
-                                    </>
-                                )}
-
-                                {activeModal === "attachPatient" && (
-                                    <>
-                                        <FormInput label="Name" name="name" value={formData.name} onChange={handleChange} />
-                                        <FormInput label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} />
-                                        <FormInput label="Email" name="email" value={formData.email} onChange={handleChange} />
-                                        <FormInput label="PESEL" name="pesel" value={formData.pesel} onChange={handleChange} />
-                                        <FormInput label="Gender" name="gender" value={formData.gender} onChange={handleChange} />
-                                        <FormInput label="Phone" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} />
-                                        <FormInput label="Blood Type" name="bloodType" value={formData.bloodType} onChange={handleChange} />
-                                        <FormInput label="Insurance #" name="insuranceNumber" value={formData.insuranceNumber} onChange={handleChange} />
-                                        <div className="md:col-span-2">
-                                            <FormInput label="Address" name="address" value={formData.address} onChange={handleChange} />
-                                        </div>
-                                    </>
-                                )}
-
-                                {activeModal === "logs" && (
-                                    <>
-                                        <FormInput label="Search Keyword" name="search" value={formData.search} onChange={handleChange} />
-                                        <FormInput label="Log Type" name="logType" value={formData.logType} onChange={handleChange} />
-                                        <FormInput label="Author ID" name="authorId" value={formData.authorId} onChange={handleChange} />
-                                        <FormInput label="From Date" name="from" type="date" value={formData.from} onChange={handleChange} />
-                                        <FormInput label="To Date" name="to" type="date" value={formData.to} onChange={handleChange} />
-                                    </>
-                                )}
-
-                                {activeModal === "users" && (
-                                    <>
-                                        <FormInput label="Name Search" name="name" value={formData.name} onChange={handleChange} />
-                                        <FormInput label="Email" name="email" value={formData.email} onChange={handleChange} />
-                                        <FormInput label="PESEL" name="pesel" value={formData.pesel} onChange={handleChange} />
-                                        <FormInput label="Created After" name="createdAfter" type="date" value={formData.createdAfter} onChange={handleChange} />
-                                    </>
-                                )}
+                        {activeModal === "users" ? (
+                            <div className="h-full flex flex-col">
+                                <h3 className="text-2xl font-bold mb-4">User Management</h3>
+                                <UsersList />
                             </div>
+                        ) : (
+                            <form onSubmit={(e) => handleSubmit(e,
+                                activeModal === "registerDoctor" ? "/api/admin/register-doctor" :
+                                    activeModal === "attachDoctor" ? "/api/admin/user-doctor" :
+                                        activeModal === "attachPatient" ? "/api/admin/user-patient" :
+                                            activeModal === "logs" ? "/api/admin/logs" : "/api/admin/users"
+                            )}>
 
-                            <div className="modal-action">
-                                <button type="submit" className={`btn btn-primary w-full ${loading ? "loading" : ""}`}>
-                                    {loading ? "Processing..." : "Submit Action"}
-                                </button>
-                            </div>
-                        </form>
+                                <h3 className="text-2xl font-bold mb-6 text-center">
+                                    {activeModal.replace(/([A-Z])/g, ' $1').toUpperCase()}
+                                </h3>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[65vh] overflow-y-auto p-1">
+                                    {activeModal === "registerDoctor" && (
+                                        <>
+                                            <FormInput label="Name" name="name" value={formData.name} onChange={handleChange} />
+                                            <FormInput label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} />
+                                            <FormInput label="Email" name="email" type="email" value={formData.email} onChange={handleChange} />
+                                            <FormInput label="PESEL" name="pesel" value={formData.pesel} onChange={handleChange} />
+                                            <FormInput label="Specialization" name="specialization" value={formData.specialization} onChange={handleChange} />
+                                            <FormInput label="Department" name="department" value={formData.department} onChange={handleChange} />
+                                            <FormInput label="Position" name="position" value={formData.position} onChange={handleChange} />
+                                            <FormInput label="License No." name="professionalLicenseNumber" value={formData.professionalLicenseNumber} onChange={handleChange} />
+                                        </>
+                                    )}
+
+                                    {activeModal === "attachDoctor" && (
+                                        <>
+                                            <FormInput label="First Name" name="name" value={formData.name} onChange={handleChange} />
+                                            <FormInput label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} />
+                                            <FormInput label="Specialization" name="specialization" value={formData.specialization} onChange={handleChange} />
+                                            <FormInput label="Department" name="department" value={formData.department} onChange={handleChange} />
+                                            <FormInput label="Position" name="position" value={formData.position} onChange={handleChange} />
+                                            <FormInput label="License No." name="professionalLicenseNumber" value={formData.professionalLicenseNumber} onChange={handleChange} />
+                                        </>
+                                    )}
+
+                                    {activeModal === "attachPatient" && (
+                                        <>
+                                            <FormInput label="Name" name="name" value={formData.name} onChange={handleChange} />
+                                            <FormInput label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} />
+                                            <FormInput label="Email" name="email" value={formData.email} onChange={handleChange} />
+                                            <FormInput label="PESEL" name="pesel" value={formData.pesel} onChange={handleChange} />
+                                            <FormInput label="Gender" name="gender" value={formData.gender} onChange={handleChange} />
+                                            <FormInput label="Phone" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} />
+                                            <FormInput label="Blood Type" name="bloodType" value={formData.bloodType} onChange={handleChange} />
+                                            <FormInput label="Insurance #" name="insuranceNumber" value={formData.insuranceNumber} onChange={handleChange} />
+                                            <div className="md:col-span-2">
+                                                <FormInput label="Address" name="address" value={formData.address} onChange={handleChange} />
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {activeModal === "logs" && (
+                                        <>
+                                            <FormInput label="Search Keyword" name="search" value={formData.search} onChange={handleChange} />
+                                            <FormInput label="Log Type" name="logType" value={formData.logType} onChange={handleChange} />
+                                            <FormInput label="Author ID" name="authorId" value={formData.authorId} onChange={handleChange} />
+                                            <FormInput label="From Date" name="from" type="date" value={formData.from} onChange={handleChange} />
+                                            <FormInput label="To Date" name="to" type="date" value={formData.to} onChange={handleChange} />
+                                        </>
+                                    )}
+                                </div>
+
+                                <div className="modal-action">
+                                    <button type="submit" className={`btn btn-primary w-full ${loading ? "loading" : ""}`}>
+                                        {loading ? "Processing..." : "Submit Action"}
+                                    </button>
+                                </div>
+                            </form>
+                        )}
                     </div>
                 </div>
             )}
