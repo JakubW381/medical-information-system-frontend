@@ -1,5 +1,5 @@
-import {Outlet, useNavigate, useLocation} from "react-router-dom";
-import {useState, useEffect} from "react";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import api from "../util/Axios";
 
 export default function Layout() {
@@ -15,7 +15,7 @@ export default function Layout() {
 
     const handleLogout = async () => {
         try {
-            await api.post("/api/auth/logout", {}, {withCredentials: true});
+            await api.post("/api/auth/logout", {}, { withCredentials: true });
             setSafeUser("");
             navigate("/");
         } catch (err) {
@@ -26,7 +26,7 @@ export default function Layout() {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await api.get("/api/auth/safe-user", {withCredentials: true});
+                const response = await api.get("/api/auth/safe-user", { withCredentials: true });
                 setSafeUser(response.data);
             } catch (err) {
                 navigate("/sign-in");
@@ -53,37 +53,32 @@ export default function Layout() {
                         {safeUser.role === "ROLE_USER" && (
                             <>
                                 <button className={isActive("/patient-info")}
-                                        onClick={() => navigate("/patient-info")}>Patient Info
+                                    onClick={() => navigate("/patient-info")}>Patient Info
                                 </button>
                                 <button className={isActive("/patient-documents")}
-                                        onClick={() => navigate("/patient-documents")}>Documents
+                                    onClick={() => navigate("/patient-documents")}>Documents
                                 </button>
                             </>
                         )}
                         {safeUser.role === "ROLE_DOCTOR" && (
                             <>
                                 <button className={isActive("/patients")}
-                                        onClick={() => navigate("/patients")}>Patients
+                                    onClick={() => navigate("/patients")}>Patients
                                 </button>
                                 <button className={isActive("/patients/register")}
-                                        onClick={() => navigate("/patients/register")}>Register Patient
+                                    onClick={() => navigate("/patients/register")}>Register Patient
                                 </button>
                             </>
                         )}
                         {safeUser.role === "ROLE_ADMIN" && (
                             <>
-                                <button className={isActive("/patients")}
-                                        onClick={() => navigate("/patients")}>Patients
-                                </button>
-                                <button className={isActive("/doctors")}>Doctors</button>
-                                <button className={isActive("/documents")}>Documents</button>
                                 <button className={isActive("/dashboard")} onClick={() => navigate("/dashboard")}>Dashboard</button>
                             </>
                         )}
                         {safeUser.role === "ROLE_LAB" && (
                             <>
                                 <button className={isActive("/lab/upload")}
-                                        onClick={() => navigate("/lab/upload")}>Upload Document
+                                    onClick={() => navigate("/lab/upload")}>Upload Document
                                 </button>
                             </>
                         )}
@@ -116,15 +111,6 @@ export default function Layout() {
                             {safeUser.role === "ROLE_ADMIN" && (
                                 <>
                                     <li>
-                                        <button onClick={() => navigate("/patients")}>Patients</button>
-                                    </li>
-                                    <li>
-                                        <button onClick={() => navigate("/doctors")}>Doctors</button>
-                                    </li>
-                                    <li>
-                                        <button onClick={() => navigate("/documents")}>Documents</button>
-                                    </li>
-                                    <li>
                                         <button onClick={() => navigate("/dashboard")}>Dashboard</button>
                                     </li>
                                 </>
@@ -138,7 +124,7 @@ export default function Layout() {
                     {/* Desktop buttons */}
                     <div className="hidden md:flex items-center gap-2">
                         <button className="btn btn-outline btn-sm md:btn-md btn-error text-sm md:text-base"
-                                onClick={handleLogout}>Logout
+                            onClick={handleLogout}>Logout
                         </button>
                         {safeUser.role === "ROLE_DOCTOR" && (
                             <button
@@ -184,7 +170,7 @@ export default function Layout() {
 
             {/* Main content */}
             <main className="flex-grow flex flex-col items-center w-full">
-                <Outlet/>
+                <Outlet />
             </main>
 
             {/* Footer */}
