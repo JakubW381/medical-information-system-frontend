@@ -54,6 +54,9 @@ export default function EditPatientPage() {
         e.preventDefault();
         if (!validate()) return;
 
+        const digits = phoneNumber.replace(/\D/g, "");
+        const formattedPhoneNumber = `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 9)}`;
+
         try {
             const payload = {
                 patientId,
@@ -61,7 +64,7 @@ export default function EditPatientPage() {
                 lastName,
                 // email,
                 pesel,
-                phoneNumber,
+                phoneNumber: formattedPhoneNumber,
                 dateOfBirth: dateOfBirth + "T00:00:00",
                 gender,
                 address,
@@ -109,6 +112,18 @@ export default function EditPatientPage() {
     useEffect(() => {
         fetchPatientInfo()
     }, [])
+
+    const handlePhoneNumberChange = (e) => {
+        let value = e.target.value.replace(/\D/g, "");
+        if (value.length > 9) value = value.slice(0, 9);
+
+        if (value.length > 6) {
+            value = `${value.slice(0, 3)}-${value.slice(3, 6)}-${value.slice(6)}`;
+        } else if (value.length > 3) {
+            value = `${value.slice(0, 3)}-${value.slice(3)}`;
+        }
+        setPhoneNumber(value);
+    };
 
     return (
         <div className="flex w-full justify-center py-10">
@@ -163,10 +178,11 @@ export default function EditPatientPage() {
                 <div>
                     <label className="font-medium">Phone Number</label>
                     <input
-                        type="phone"
+                        type="tel"
                         value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        onChange={handlePhoneNumberChange}
                         className="input input-bordered w-full"
+                        placeholder="000-000-000"
                     />
                     {errors.phoneNumber && (
                         <p className="text-red-500 text-xs mt-1">{errors.phoneNumber}</p>
