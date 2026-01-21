@@ -79,6 +79,7 @@ export default function PatientPage() {
 
     const [patientInfo, setPatientInfo] = useState();
     const [patientDocuments, setPatientDocuments] = useState({ items: [], totalElements: 0, totalPages: 0 });
+    const [assignmentStatus, setAssignmentStatus] = useState({ assigned: false, examCount: 0 });
 
     const [page, setPage] = useState(0);
     const [year, setYear] = useState("");
@@ -129,6 +130,15 @@ export default function PatientPage() {
         } catch (err) {
             console.log(`Błąd przy pobieraniu informacji o pacjencie ${err}`);
             navigate("/patients");
+        }
+    };
+
+    const fetchAssignmentStatus = async () => {
+        try {
+            const response = await api.get(`/api/doc/patient/${patientId}/assignment-status`, { withCredentials: true });
+            setAssignmentStatus(response.data);
+        } catch (err) {
+            console.error("Error fetching assignment status:", err);
         }
     };
 
@@ -197,6 +207,34 @@ export default function PatientPage() {
         }
     };
 
+    const handleAssignPatient = async () => {
+        try {
+            await api.post(`/api/doc/assign-patient/${patientId}`, {}, { withCredentials: true });
+            alert("Patient assigned successfully");
+            fetchAssignmentStatus();
+        } catch (err) {
+            console.error("Error assigning patient:", err);
+            alert("Error assigning patient");
+        }
+    };
+
+    const handleUnassign = async () => {
+        if (assignmentStatus.examCount > 0) {
+            if (!window.confirm(`Warning: This patient has ${assignmentStatus.examCount} medical examination(s). Unassigning will delete all of them. Are you sure?`)) {
+                return;
+            }
+        }
+
+        try {
+            await api.post(`/api/doc/unassign-patient/${patientId}`, {}, { withCredentials: true });
+            alert("Patient unassigned and data cleared.");
+            fetchAssignmentStatus();
+        } catch (err) {
+            console.error("Error unassigning patient:", err);
+            alert("Error unassigning patient");
+        }
+    };
+
     useEffect(() => {
         fetchPatientDocuments();
     }, []);
@@ -207,6 +245,7 @@ export default function PatientPage() {
 
     useEffect(() => {
         fetchPatientInfo();
+        fetchAssignmentStatus();
     }, [patientId]);
 
     const handleSearchSubmit = (e) => {
@@ -282,6 +321,21 @@ export default function PatientPage() {
                         >
                             Send Message
                         </button>
+                        {assignmentStatus.assigned ? (
+                            <button
+                                className="btn btn-sm btn-error text-white mt-2"
+                                onClick={handleUnassign}
+                            >
+                                Unassign
+                            </button>
+                        ) : (
+                            <button
+                                className="btn btn-sm btn-success text-white mt-2"
+                                onClick={handleAssignPatient}
+                            >
+                                Assign to Me
+                            </button>
+                        )}
                     </div>
                 }
             </div>

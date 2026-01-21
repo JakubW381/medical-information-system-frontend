@@ -68,6 +68,9 @@ export default function Layout() {
                                 <button className={isActive("/patients/register")}
                                     onClick={() => navigate("/patients/register")}>Register Patient
                                 </button>
+                                <button className={isActive("/patients/examinations")}
+                                    onClick={() => navigate("/patients/examinations")}>Medical Examinations
+                                </button>
                             </>
                         )}
                         {safeUser.role === "ROLE_ADMIN" && (
@@ -105,6 +108,9 @@ export default function Layout() {
                                     </li>
                                     <li>
                                         <button onClick={() => navigate("/patients/register")}>Register Patient</button>
+                                    </li>
+                                    <li>
+                                        <button onClick={() => navigate("/patients/examinations")}>Medical Examinations</button>
                                     </li>
                                 </>
                             )}

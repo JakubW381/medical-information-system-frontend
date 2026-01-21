@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-export default function PatientRecord({ patient, width }) {
+export default function PatientRecord({ patient, width, actions }) {
   const navigate = useNavigate();
 
   const chipList = (value) => {
@@ -11,7 +11,7 @@ export default function PatientRecord({ patient, width }) {
   return (
     <div
       className="card bg-base-300 shadow-md rounded-lg p-4 hover:shadow-xl 
-                 hover:bg-green-600 transition cursor-pointer w-full"
+                 hover:bg-green-600 transition cursor-pointer w-full relative"
       onClick={() => navigate(`/patient/${patient.patientId}`)}
     >
       {/* NAME HEADER */}
@@ -78,6 +78,12 @@ export default function PatientRecord({ patient, width }) {
           ))}
         </div>
       </div>
+
+      {actions && (
+        <div className="mt-4 flex gap-2" onClick={(e) => e.stopPropagation()}>
+          {actions}
+        </div>
+      )}
     </div>
   );
 }
