@@ -10,6 +10,7 @@ export default function RegisterPatientPage() {
     const [dateOfBirth, setDateOfBirth] = useState("");
     const [gender, setGender] = useState("");
     const [address, setAddress] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [bloodType, setBloodType] = useState("");
     const [allergies, setAllergies] = useState("");
     const [chronicDiseases, setChronicDiseases] = useState("");
@@ -38,6 +39,8 @@ export default function RegisterPatientPage() {
 
         if (!address.trim()) newErrors.address = "Address is required.";
 
+        if (!phoneNumber.trim()) newErrors.phoneNumber = "Phone number is required.";
+
         if (!bloodType) newErrors.bloodType = "Select blood type.";
 
         setErrors(newErrors);
@@ -57,6 +60,7 @@ export default function RegisterPatientPage() {
                 dateOfBirth: dateOfBirth + "T00:00:00",
                 gender,
                 address,
+                phoneNumber,
                 bloodType,
                 allergies: allergies.trim(),
                 chronicDiseases,
@@ -176,7 +180,6 @@ export default function RegisterPatientPage() {
                         <p className="text-red-500 text-xs mt-1">{errors.gender}</p>
                     )}
                 </div>
-
                 <div>
                     <label className="font-medium">Address</label>
                     <input
@@ -191,6 +194,20 @@ export default function RegisterPatientPage() {
                 </div>
 
                 <div>
+                    <label className="font-medium">Phone Number</label>
+                    <input
+                        type="text"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        className="input input-bordered w-full"
+                    />
+                    {errors.phoneNumber && (
+                        <p className="text-red-500 text-xs mt-1">{errors.phoneNumber}</p>
+                    )}
+                </div>
+
+                <div>
+                    <label className="font-medium">Blood Type</label>
                     <label className="font-medium">Blood Type</label>
                     <div className="grid grid-cols-4 gap-2 mt-1">
                         {["A+", "A-", "B+", "B-", "AB+", "AB-", "0+", "0-"].map((bt) => (
