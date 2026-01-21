@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { base64ToBlob } from "../../../util/FilesReader.jsx";
 import DicomViewer from "../../../util/DicomViewer.jsx";
+import api from "../../../util/Axios.js";
 
 export default function DocumentRecord({ document, fetchFun }) {
   const [openedFile, setOpenedFile] = useState(null);
@@ -19,6 +20,20 @@ export default function DocumentRecord({ document, fetchFun }) {
 
       setOpenedFile({ ...file, blobUrl });
       setIsModalOpen(true);
+    }
+  };
+
+  const handleShare = async (e) => {
+    e.stopPropagation();
+    try {
+      const response = await api.get(`/api/user/document/${document.id}/share`, { withCredentials: true });
+      if (response.data) {
+        await navigator.clipboard.writeText(response.data);
+        alert("Link copied to clipboard!\n" + response.data);
+      }
+    } catch (err) {
+      console.error("Share failed", err);
+      alert("Failed to create share link");
     }
   };
 
@@ -74,15 +89,26 @@ export default function DocumentRecord({ document, fetchFun }) {
             <h2 className="text-lg font-bold truncate">
               {document.patient.name} {document.patient.lastName}
             </h2>
-            <button
-              onClick={handleDownload}
-              className="btn btn-sm btn-circle btn-ghost"
-              title="Download"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-              </svg>
-            </button>
+            <div className="flex gap-1 justify-end">
+              <button
+                onClick={handleShare}
+                className="btn btn-sm btn-circle btn-ghost"
+                title="Share (24h)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+                </svg>
+              </button>
+              <button
+                onClick={handleDownload}
+                className="btn btn-sm btn-circle btn-ghost"
+                title="Download"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+              </button>
+            </div>
           </div>
           <p className="text-sm truncate"><strong>Sender:</strong> {document.sender.name}</p>
           <p className="text-sm"><strong>Date:</strong> {new Date(document.dateTime).toLocaleDateString()}</p>
