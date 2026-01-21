@@ -198,7 +198,8 @@ export default function AdminDashboard() {
                                 </div>
 
                                 <div className="modal-action">
-                                    <button type="submit" className={`btn btn-primary w-full ${loading ? "loading" : ""}`}>
+                                    <button type="submit" className="btn btn-primary w-full" disabled={loading}>
+                                        {loading && <span className="loading loading-spinner"></span>}
                                         {loading ? "Processing..." : "Submit Action"}
                                     </button>
                                 </div>
