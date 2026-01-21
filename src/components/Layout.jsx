@@ -30,6 +30,7 @@ export default function Layout() {
                 setSafeUser(response.data);
             } catch (err) {
                 navigate("/sign-in");
+                console.log(err)
             }
         };
         fetchUserInfo();
@@ -51,27 +52,34 @@ export default function Layout() {
                     <div className="hidden md:flex gap-2 md:gap-4">
                         {safeUser.role === "ROLE_USER" && (
                             <>
-                                <button className={isActive("/patient-info")} onClick={() => navigate("/patient-info")}>Patient Info</button>
-                                <button className={isActive("/patient-documents")} onClick={() => navigate("/patient-documents")}>Documents</button>
+                                <button className={isActive("/patient-info")}
+                                    onClick={() => navigate("/patient-info")}>Patient Info
+                                </button>
+                                <button className={isActive("/patient-documents")}
+                                    onClick={() => navigate("/patient-documents")}>Documents
+                                </button>
                             </>
                         )}
                         {safeUser.role === "ROLE_DOCTOR" && (
                             <>
-                                <button className={isActive("/patients")} onClick={() => navigate("/patients")}>Patients</button>
-                                <button className={isActive("/patients/register")} onClick={() => navigate("/patients/register")}>Register Patient</button>
+                                <button className={isActive("/patients")}
+                                    onClick={() => navigate("/patients")}>Patients
+                                </button>
+                                <button className={isActive("/patients/register")}
+                                    onClick={() => navigate("/patients/register")}>Register Patient
+                                </button>
                             </>
                         )}
                         {safeUser.role === "ROLE_ADMIN" && (
                             <>
-                                <button className={isActive("/patients")} onClick={() => navigate("/patients")}>Patients</button>
-                                <button className={isActive("/doctors")}>Doctors</button>
-                                <button className={isActive("/documents")}>Documents</button>
-                                <button className={isActive("/dashboard")}>Dashboard</button>
+                                <button className={isActive("/dashboard")} onClick={() => navigate("/dashboard")}>Dashboard</button>
                             </>
                         )}
                         {safeUser.role === "ROLE_LAB" && (
                             <>
-                                <button className={isActive("/lab/upload")} onClick={() => navigate("/lab/upload")}>Upload Document</button>
+                                <button className={isActive("/lab/upload")}
+                                    onClick={() => navigate("/lab/upload")}>Upload Document
+                                </button>
                             </>
                         )}
                     </div>
@@ -82,22 +90,29 @@ export default function Layout() {
                         <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
                             {safeUser.role === "ROLE_USER" && (
                                 <>
-                                    <li><button onClick={() => navigate("/patient-info")}>Patient Info</button></li>
-                                    <li><button onClick={() => navigate("/patient-documents")}>Documents</button></li>
+                                    <li>
+                                        <button onClick={() => navigate("/patient-info")}>Patient Info</button>
+                                    </li>
+                                    <li>
+                                        <button onClick={() => navigate("/patient-documents")}>Documents</button>
+                                    </li>
                                 </>
                             )}
                             {safeUser.role === "ROLE_DOCTOR" && (
                                 <>
-                                    <li><button onClick={() => navigate("/patients")}>Patients</button></li>
-                                    <li><button onClick={() => navigate("/patients/register")}>Register Patient</button></li>
+                                    <li>
+                                        <button onClick={() => navigate("/patients")}>Patients</button>
+                                    </li>
+                                    <li>
+                                        <button onClick={() => navigate("/patients/register")}>Register Patient</button>
+                                    </li>
                                 </>
                             )}
                             {safeUser.role === "ROLE_ADMIN" && (
                                 <>
-                                    <li><button onClick={() => navigate("/patients")}>Patients</button></li>
-                                    <li><button onClick={() => navigate("/doctors")}>Doctors</button></li>
-                                    <li><button onClick={() => navigate("/documents")}>Documents</button></li>
-                                    <li><button onClick={() => navigate("/dashboard")}>Dashboard</button></li>
+                                    <li>
+                                        <button onClick={() => navigate("/dashboard")}>Dashboard</button>
+                                    </li>
                                 </>
                             )}
                         </ul>
@@ -108,9 +123,13 @@ export default function Layout() {
                 <div className="flex items-center gap-2 md:gap-4">
                     {/* Desktop buttons */}
                     <div className="hidden md:flex items-center gap-2">
-                        <button className="btn btn-outline btn-sm md:btn-md btn-error text-sm md:text-base" onClick={handleLogout}>Logout</button>
+                        <button className="btn btn-outline btn-sm md:btn-md btn-error text-sm md:text-base"
+                            onClick={handleLogout}>Logout
+                        </button>
                         {safeUser.role === "ROLE_DOCTOR" && (
-                            <button className={"btn btn-outline btn-sm md:btn-md text-sm md:text-base " + isActive("/doctor/profile")} onClick={() => navigate("/doctor/profile")}>Your Profile</button>
+                            <button
+                                className={"btn btn-outline btn-sm md:btn-md text-sm md:text-base " + isActive("/doctor/profile")}
+                                onClick={() => navigate("/doctor/profile")}>Your Profile</button>
                         )}
                         <p className="hidden sm:block text-sm md:text-base font-medium">{safeUser.name} {safeUser.lastName}</p>
                         <div className="avatar">
@@ -137,9 +156,13 @@ export default function Layout() {
                         </label>
                         <ul tabIndex={0} className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-36">
                             {safeUser.role === "ROLE_DOCTOR" && (
-                                <li><button onClick={() => navigate("/doctor/profile")}>Your Profile</button></li>
+                                <li>
+                                    <button onClick={() => navigate("/doctor/profile")}>Your Profile</button>
+                                </li>
                             )}
-                            <li><button onClick={handleLogout}>Logout</button></li>
+                            <li>
+                                <button onClick={handleLogout}>Logout</button>
+                            </li>
                         </ul>
                     </div>
                 </div>
