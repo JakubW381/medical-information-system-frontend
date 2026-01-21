@@ -32,10 +32,8 @@ const MessageModal = ({ isOpen, onClose, onSend, loading, recipientName }) => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
             <div className="bg-base-100 rounded-xl shadow-2xl w-full max-w-lg border border-base-200 p-6 flex flex-col gap-4 animate-in fade-in zoom-in duration-200">
                 <h3 className="text-xl font-bold text-primary">Message to {recipientName}</h3>
-                <div className="form-control w-full">
-                    <label className="label">
-                        <span className="label-text">Subject</span>
-                    </label>
+                <div className="flex flex-col w-full">
+                    <label className="font-medium mb-1">Subject</label>
                     <input
                         type="text"
                         placeholder="Type subject here"
@@ -45,10 +43,8 @@ const MessageModal = ({ isOpen, onClose, onSend, loading, recipientName }) => {
                         disabled={loading}
                     />
                 </div>
-                <div className="form-control w-full">
-                    <label className="label">
-                        <span className="label-text">Message Content</span>
-                    </label>
+                <div className="flex flex-col w-full">
+                    <label className="font-medium mb-1">Message Content</label>
                     <textarea
                         className="textarea textarea-bordered h-32"
                         placeholder="Type your message here"
