@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import api from "../../../../util/Axios";
 
 export default function MedicalExaminationsPage() {
+    const { safeUser } = useOutletContext();
     const [page, setPage] = useState(0);
     const [request, setRequest] = useState({
         page: 0,
@@ -16,8 +17,10 @@ export default function MedicalExaminationsPage() {
     const navigate = useNavigate();
 
     const fetchExaminations = async () => {
+        if (!safeUser || !safeUser.role) return;
+        const endpoint = safeUser.role === 'ROLE_DOCTOR' ? "/api/doc/examinations" : "/api/user/examinations";
         try {
-            const response = await api.post("/api/doc/examinations", { ...request, page }, { withCredentials: true });
+            const response = await api.post(endpoint, { ...request, page }, { withCredentials: true });
             setExaminationsPage(response.data);
         } catch (err) {
             console.error("Error fetching examinations:", err);
@@ -26,7 +29,7 @@ export default function MedicalExaminationsPage() {
 
     useEffect(() => {
         fetchExaminations();
-    }, [page, request.search, request.sortDirection, request.sortBy]);
+    }, [page, request.search, request.sortDirection, request.sortBy, safeUser]);
 
     const handleSearchChange = (e) => {
         setRequest({ ...request, search: e.target.value });
@@ -51,7 +54,7 @@ export default function MedicalExaminationsPage() {
             <div className="flex gap-4 items-center bg-base-200 p-4 rounded-xl shadow">
                 <input
                     type="text"
-                    placeholder="Search by Patient Name"
+                    placeholder={safeUser?.role === 'ROLE_DOCTOR' ? "Search by Patient Name" : "Search by Doctor Name"}
                     className="input input-bordered w-full max-w-xs"
                     value={request.search}
                     onChange={handleSearchChange}
@@ -64,7 +67,7 @@ export default function MedicalExaminationsPage() {
                         <tr>
                             <th className="cursor-pointer hover:bg-base-200" onClick={() => handleSortChange("id")}>ID {request.sortBy === "id" && (request.sortDirection === "asc" ? "▲" : "▼")}</th>
                             <th className="cursor-pointer hover:bg-base-200" onClick={() => handleSortChange("date")}>Date {request.sortBy === "date" && (request.sortDirection === "asc" ? "▲" : "▼")}</th>
-                            <th>Patient</th>
+                            <th>{safeUser?.role === 'ROLE_DOCTOR' ? "Patient" : "Doctor"}</th>
                             <th>Description</th>
                         </tr>
                     </thead>
@@ -76,7 +79,11 @@ export default function MedicalExaminationsPage() {
                                 <tr key={exam.id} className="hover">
                                     <td>{exam.id}</td>
                                     <td>{new Date(exam.date).toLocaleString()}</td>
-                                    <td className="font-bold">{exam.patientName} {exam.patientLastName}</td>
+                                    <td className="font-bold">
+                                        {safeUser?.role === 'ROLE_DOCTOR'
+                                            ? `${exam.patientName} ${exam.patientLastName}`
+                                            : `${exam.doctorName} ${exam.doctorLastName}`}
+                                    </td>
                                     <td className="truncate max-w-xs" title={exam.description}>{exam.description}</td>
                                 </tr>
                             ))

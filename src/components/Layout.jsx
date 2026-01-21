@@ -58,6 +58,9 @@ export default function Layout() {
                                 <button className={isActive("/patient-documents")}
                                     onClick={() => navigate("/patient-documents")}>Documents
                                 </button>
+                                <button className={isActive("/patients/examinations")}
+                                    onClick={() => navigate("/patients/examinations")}>Medical Examinations
+                                </button>
                             </>
                         )}
                         {safeUser.role === "ROLE_DOCTOR" && (
@@ -176,7 +179,7 @@ export default function Layout() {
 
             {/* Main content */}
             <main className="flex-grow flex flex-col items-center w-full">
-                <Outlet />
+                <Outlet context={{ safeUser }} />
             </main>
 
             {/* Footer */}
