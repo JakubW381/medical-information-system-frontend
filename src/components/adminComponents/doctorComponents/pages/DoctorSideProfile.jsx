@@ -1,9 +1,17 @@
 import { useEffect, useState, useRef } from "react";
-import DoctorRecord from "../DoctorRecord";
-import PatientRecord from "../PatientRecord";
 import DocumentRecord from "../DocumentRecord";
+import { userFetchDocumentBase64 } from "../../../../util/FilesReader.jsx";
 import { useNavigate } from "react-router-dom";
 import api from "../../../../util/Axios";
+
+const DataField = ({ label, value, highlight = false }) => (
+    <div className="flex flex-col p-6 border-b border-base-200 last:border-0 hover:bg-base-200/50 transition-colors">
+        <span className="text-xs font-bold text-primary uppercase tracking-widest mb-1">{label}</span>
+        <span className={`text-lg font-semibold ${highlight ? "text-secondary" : "text-base-content"}`}>
+            {value || "N/A"}
+        </span>
+    </div>
+);
 
 export default function DoctorSideProfile() {
     const [patientProfile, setPatientProfile] = useState(null);
@@ -19,6 +27,16 @@ export default function DoctorSideProfile() {
     const [year, setYear] = useState("");
     const [page, setPage] = useState(0);
 
+    // Edit Modal State
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [editFormData, setEditFormData] = useState({
+        specialization: "",
+        department: "",
+        position: "",
+        professionalLicenseNumber: ""
+    });
+
+    const fileInputRef = useRef(null);
     const navigate = useNavigate();
 
     const fetchPatientInfo = async () => {
@@ -86,6 +104,41 @@ export default function DoctorSideProfile() {
         }
     };
 
+    // Edit Handlers
+    const handleEditClick = () => {
+        if (doctorProfile) {
+            setEditFormData({
+                specialization: doctorProfile.specialization || "",
+                department: doctorProfile.department || "",
+                position: doctorProfile.position || "",
+                professionalLicenseNumber: doctorProfile.professionalLicenseNumber || ""
+            });
+            setIsEditModalOpen(true);
+        }
+    };
+
+    const handleEditChange = (e) => {
+        const { name, value } = e.target;
+        setEditFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await api.post("/api/doc/update-doctor", editFormData, {
+                withCredentials: true,
+            });
+            setIsEditModalOpen(false);
+            fetchDoctorProfile(); // Refresh data
+        } catch (err) {
+            console.error("Error updating doctor profile:", err);
+            alert("Failed to update profile.");
+        }
+    };
+
     useEffect(() => {
         (async () => {
             await fetchDoctorProfile();
@@ -100,8 +153,6 @@ export default function DoctorSideProfile() {
 
     const [isLoading, setIsLoading] = useState(false);
     const [selectedFiles, setSelectedFiles] = useState([]);
-
-    const fileInputRef = useRef(null);
 
     const openFilePicker = () => fileInputRef.current?.click();
 
@@ -140,206 +191,230 @@ export default function DoctorSideProfile() {
     };
 
     return (
-        <div className="flex flex-col w-full px-4 lg:px-10">
+        <div className="w-full min-h-screen bg-base-200 p-4 md:p-8">
+            <div className="max-w-7xl mx-auto space-y-8">
 
-            {/* DOCTOR PROFILE */}
-            {doctorProfile && (
-                <>
-                    <h1 className="text-3xl font-bold my-6">Doctor Profile</h1>
-
-                    <div className="w-full flex justify-center ">
-                        <DoctorRecord doctor={doctorProfile} />
-                    </div>
-
-                    <div className="flex justify-start mt-4">
-                        <button
-                            className="btn btn-sm btn-outline hover:btn-info"
-                            onClick={() => navigate(`/patient/${patientProfile.patientId}/update`)}
-                        >
-                            ✏️ Edit
-                        </button>
-                    </div>
-                </>
-            )}
-
-            {/* PATIENT PROFILE */}
-            {patientProfile && (
-                <>
-                    <h1 className="text-3xl font-bold my-6">Patient Profile</h1>
-
-                    <div className="w-full flex justify-center">
-                        <div className="card bg-base-300 shadow-md rounded-lg p-6 w-full lg:w-9/10">
-                            <h2 className="text-xl font-bold mb-4">
-                                {patientProfile.name} {patientProfile.lastName}
-                            </h2>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <p><strong>PESEL:</strong> {patientProfile.pesel}</p>
-                                <p><strong>Date of Birth:</strong> {patientProfile.dateOfBirth}</p>
-                                <p><strong>Gender:</strong> {patientProfile.gender}</p>
-                                <p><strong>Phone:</strong> {patientProfile.phoneNumber}</p>
-                                <p><strong>Blood Type:</strong> {patientProfile.bloodType}</p>
-                                <p><strong>Insurance #:</strong> {patientProfile.insuranceNumber}</p>
-                                <p className="sm:col-span-2"><strong>Address:</strong> {patientProfile.address}</p>
-                                <p className="sm:col-span-2"><strong>Allergies:</strong> {patientProfile.allergies || "None"}</p>
-                                <p className="sm:col-span-2"><strong>Chronic Diseases:</strong> {patientProfile.chronicDiseases || "None"}</p>
-                                <p className="sm:col-span-2"><strong>Medications:</strong> {patientProfile.medications || "None"}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex justify-start mt-4">
-                        <button
-                            className="btn btn-sm btn-outline hover:btn-info"
-                            onClick={() => navigate(`/patient/${patientProfile.patientId}/update`)}
-                        >
-                            ✏️ Edit
-                        </button>
-                    </div>
-                </>
-            )}
-
-            {/* DOCUMENTS */}
-            {patientProfile && (
-                <>
-                    <h1 className="text-3xl font-bold my-8">Documents</h1>
-
-                    <div className="flex flex-col lg:flex-row gap-6">
-
-                        {/* FILTER PANEL */}
-                        <div className="w-full lg:w-1/4">
-                            <form
-                                className="flex flex-col gap-4 p-5 bg-base-200 rounded-xl shadow-md  items-center"
-                                onSubmit={handleSearchSubmit}
-                            >
-                                <h3 className="text-lg font-bold mb-1">Filter Documents</h3>
-
-                                <input
-                                    type="text"
-                                    placeholder="Search"
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                    className="input input-bordered w-full"
-                                />
-
-                                <input
-                                    type="number"
-                                    placeholder="Year"
-                                    value={year}
-                                    onChange={(e) => setYear(e.target.value)}
-                                    className="input input-bordered w-full"
-                                />
-
-                                <button className="btn btn-success w-full mt-2">Search</button>
-                            </form>
-                        </div>
-
-                        {/* DOCUMENTS + UPLOAD */}
-                        <div className="flex-1 flex flex-col gap-6">
-
-                            {/* SELECTED FILES */}
-                            {selectedFiles.length > 0 && (
-                                <div className="p-4 bg-base-200 rounded-lg shadow-md">
-                                    <h3 className="font-bold mb-2">Selected files:</h3>
-
-                                    <div className="flex flex-col gap-2">
-                                        {selectedFiles.map((file, index) => (
-                                            <div
-                                                key={index}
-                                                className="flex justify-between items-center bg-base-300 p-2 rounded-lg"
-                                            >
-                                                <span className="truncate">{file.name}</span>
-                                                <button
-                                                    className="btn btn-xs btn-error"
-                                                    onClick={() => removeFile(index)}
-                                                >
-                                                    ✖
-                                                </button>
-                                            </div>
-                                        ))}
+                {/* DOCTOR PROFILE SECTION */}
+                {doctorProfile && (
+                    <div className="bg-base-100 rounded-2xl shadow-xl border border-base-300 overflow-hidden">
+                        <div className="bg-neutral text-neutral-content px-8 py-10 relative">
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                                <div>
+                                    <h1 className="text-4xl font-extrabold tracking-tight mb-2 uppercase">
+                                        Dr. {doctorProfile.name} {doctorProfile.lastName}
+                                    </h1>
+                                    <div className="flex items-center gap-4 opacity-80">
+                                        <span className="bg-base-100 text-base-content px-3 py-1 rounded-full text-sm font-mono font-bold">
+                                            ID: {doctorProfile.id}
+                                        </span>
+                                        <span className="text-sm font-medium italic">Medical Professional Profile</span>
                                     </div>
                                 </div>
-                            )}
-
-                            {/* FILE INPUT BUTTONS */}
-                            <input
-                                type="file"
-                                multiple
-                                ref={fileInputRef}
-                                className="hidden"
-                                onChange={handleFilesSelected}
-                            />
-
-                            <button
-                                className="btn btn-sm btn-outline w-full h-10 hover:btn-success"
-                                onClick={openFilePicker}
-                            >
-                                Choose files
-                            </button>
-
-                            {isLoading ? (
-                                <button className="btn btn-sm btn-success w-full h-10 mt-2">
-                                    Uploading... Please wait
-                                </button>
-                            ) : (
-                                <button
-                                    className="btn btn-sm btn-success w-full h-10 mt-2"
-                                    onClick={uploadDocs}
-                                    disabled={selectedFiles.length === 0}
-                                >
-                                    Upload documents
-                                </button>
-                            )}
-
-                            {/* DOCUMENT GRID */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {documents.totalElements > 0 ? (
-                                    documents.items.map((d) => (
-                                        <DocumentRecord key={d.id} document={d} />
-                                    ))
-                                ) : (
-                                    <p className="text-center col-span-full text-gray-500 mt-4 mb-20">
-                                        No documents available.
-                                    </p>
-                                )}
-                            </div>
-
-                            {documents.totalPages > 1 && (
-                                <div className="flex items-center justify-center gap-4 mt-4">
+                                <div className="flex gap-2">
                                     <button
-                                        className="btn btn-sm btn-outline"
-                                        onClick={handlePrevPage}
-                                        disabled={page === 0}
+                                        onClick={handleEditClick}
+                                        className="btn btn-primary btn-sm md:btn-md"
                                     >
-                                        ◀
+                                        Edit Profile
                                     </button>
+                                </div>
+                            </div>
+                        </div>
 
-                                    <div className="flex items-center gap-2">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-base-300">
+                            <div className="bg-base-100">
+                                <div className="px-6 py-4 bg-base-200/50 border-b border-base-300">
+                                    <h2 className="text-sm font-black opacity-60 uppercase tracking-widest">Professional Details</h2>
+                                </div>
+                                <DataField label="Specialization" value={doctorProfile.specialization} />
+                                <DataField label="Department" value={doctorProfile.department} />
+                            </div>
+                            <div className="bg-base-100">
+                                <div className="px-6 py-4 bg-base-200/50 border-b border-base-300">
+                                    <h2 className="text-sm font-black opacity-60 uppercase tracking-widest">Employment Info</h2>
+                                </div>
+                                <DataField label="Position" value={doctorProfile.position} />
+                                <DataField label="License Number" value={doctorProfile.professionalLicenseNumber} highlight={true} />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+
+                {/* PATIENT PROFILE & DOCUMENTS SECTION */}
+                {patientProfile && (
+                    <div className="bg-base-100 rounded-2xl shadow-xl border border-base-300 overflow-hidden p-6 md:p-8">
+                        <h2 className="text-3xl font-bold mb-6 border-b pb-2">Patient Files & Documents</h2>
+
+                        <div className="flex flex-col lg:flex-row gap-8">
+                            {/* FILTER PANEL */}
+                            <div className="w-full lg:w-1/4 h-fit">
+                                <form
+                                    className="flex flex-col gap-4 p-5 bg-base-200 rounded-xl shadow-inner"
+                                    onSubmit={handleSearchSubmit}
+                                >
+                                    <h3 className="text-lg font-bold mb-1">Filter Documents</h3>
+
+                                    <div className="form-control w-full">
+                                        <label className="label"><span className="label-text">Search</span></label>
+                                        <input
+                                            type="text"
+                                            value={search}
+                                            onChange={(e) => setSearch(e.target.value)}
+                                            className="input input-bordered w-full"
+                                            placeholder="Keyword..."
+                                        />
+                                    </div>
+
+                                    <div className="form-control w-full">
+                                        <label className="label"><span className="label-text">Year</span></label>
                                         <input
                                             type="number"
-                                            className="input input-bordered w-16 text-center"
-                                            value={page + 1}
-                                            onChange={(e) => {
-                                                let newPage = parseInt(e.target.value, 10) - 1;
-                                                if (newPage >= 0 && newPage < documents.totalPages)
-                                                    setPage(newPage);
-                                            }}
+                                            value={year}
+                                            onChange={(e) => setYear(e.target.value)}
+                                            className="input input-bordered w-full"
+                                            placeholder="YYYY"
                                         />
-                                        <span className="text-lg">/ {documents.totalPages}</span>
                                     </div>
 
-                                    <button
-                                        className="btn btn-sm btn-outline"
-                                        onClick={handleNextPage}
-                                        disabled={page >= documents.totalPages - 1}
-                                    >
-                                        ▶
-                                    </button>
+                                    <button className="btn btn-primary w-full mt-2">Apply Filters</button>
+                                </form>
+                            </div>
+
+                            {/* DOCUMENT LIST */}
+                            <div className="flex-1 flex flex-col gap-6">
+
+                                {/* UPLOAD AREA */}
+                                <div className="p-4 border border-dashed border-base-300 rounded-xl bg-base-50">
+                                    <div className="flex flex-col sm:flex-row gap-4 items-center">
+                                        <input
+                                            type="file"
+                                            multiple
+                                            ref={fileInputRef}
+                                            className="hidden"
+                                            onChange={handleFilesSelected}
+                                        />
+                                        <button
+                                            className="btn btn-outline"
+                                            onClick={openFilePicker}
+                                        >
+                                            + Select Files
+                                        </button>
+
+                                        {selectedFiles.length > 0 && (
+                                            <div className="flex-1 flex flex-wrap gap-2">
+                                                {selectedFiles.map((file, index) => (
+                                                    <div key={index} className="badge badge-lg gap-2 pr-0">
+                                                        {file.name}
+                                                        <button onClick={() => removeFile(index)} className="btn btn-xs btn-circle btn-ghost">✕</button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {selectedFiles.length > 0 && (
+                                            <button
+                                                className={`btn btn-success ${isLoading ? 'loading' : ''}`}
+                                                onClick={uploadDocs}
+                                                disabled={isLoading}
+                                            >
+                                                {isLoading ? 'Uploading...' : 'Upload'}
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
-                            )}
+
+                                {/* DOCUMENT GRID */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {documents.totalElements > 0 ? (
+                                        documents.items.map((d) => (
+                                            <DocumentRecord key={d.id} document={d} fetchFun={userFetchDocumentBase64} />
+                                        ))
+                                    ) : (
+                                        <div className="col-span-full py-12 text-center opacity-50">
+                                            <div className="text-4xl mb-2">📂</div>
+                                            <p>No documents found matching your criteria.</p>
+                                        </div>
+                                    )}
+                                </div>
+                                {/* Pagination (reused) */}
+                                {documents.totalPages > 1 && (
+                                    <div className="flex items-center justify-center gap-4 mt-8">
+                                        <button className="btn btn-sm btn-outline" onClick={handlePrevPage} disabled={page === 0}>◀</button>
+                                        <span className="text-sm font-bold">Page {page + 1} of {documents.totalPages}</span>
+                                        <button className="btn btn-sm btn-outline" onClick={handleNextPage} disabled={page >= documents.totalPages - 1}>▶</button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </>
+                )}
+            </div>
+
+            {/* EDIT MODAL */}
+            {isEditModalOpen && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="bg-base-100 rounded-xl shadow-2xl w-full max-w-lg border border-base-200">
+                        <form onSubmit={handleEditSubmit} className="p-6 flex flex-col gap-4">
+                            <h3 className="text-xl font-bold text-primary mb-2">Edit Doctor Profile</h3>
+
+                            <div className="flex flex-col w-full">
+                                <label className="font-medium mb-1">Specialization</label>
+                                <input
+                                    type="text"
+                                    name="specialization"
+                                    value={editFormData.specialization}
+                                    onChange={handleEditChange}
+                                    className="input input-bordered w-full"
+                                />
+                            </div>
+
+                            <div className="flex flex-col w-full">
+                                <label className="font-medium mb-1">Department</label>
+                                <input
+                                    type="text"
+                                    name="department"
+                                    value={editFormData.department}
+                                    onChange={handleEditChange}
+                                    className="input input-bordered w-full"
+                                />
+                            </div>
+
+                            <div className="flex flex-col w-full">
+                                <label className="font-medium mb-1">Position</label>
+                                <input
+                                    type="text"
+                                    name="position"
+                                    value={editFormData.position}
+                                    onChange={handleEditChange}
+                                    className="input input-bordered w-full"
+                                />
+                            </div>
+
+                            <div className="flex flex-col w-full">
+                                <label className="font-medium mb-1">License Number</label>
+                                <input
+                                    type="text"
+                                    name="professionalLicenseNumber"
+                                    value={editFormData.professionalLicenseNumber}
+                                    onChange={handleEditChange}
+                                    className="input input-bordered w-full"
+                                />
+                            </div>
+
+                            <div className="flex justify-end gap-3 mt-4">
+                                <button
+                                    type="button"
+                                    className="btn btn-ghost"
+                                    onClick={() => setIsEditModalOpen(false)}
+                                >
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             )}
         </div>
     );
