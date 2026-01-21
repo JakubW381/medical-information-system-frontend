@@ -33,7 +33,7 @@ export default function EditPatientPage() {
         // else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
         //     newErrors.email = "Invalid email format.";
 
-        if(!/^\d{9}$/.test(phoneNumber.replaceAll(" ", ""))) newErrors.phoneNumber = "Phone Number must be 9 digits long"
+        if (!/^\d{9}$/.test(phoneNumber.replaceAll(" ", "").replaceAll("-", ""))) newErrors.phoneNumber = "Phone Number must be 9 digits long"
 
         if (!pesel.trim()) newErrors.pesel = "PESEL is required.";
         else if (!/^\d{11}$/.test(pesel))
@@ -54,6 +54,9 @@ export default function EditPatientPage() {
         e.preventDefault();
         if (!validate()) return;
 
+        const digits = phoneNumber.replace(/\D/g, "");
+        const formattedPhoneNumber = `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 9)}`;
+
         try {
             const payload = {
                 patientId,
@@ -61,8 +64,8 @@ export default function EditPatientPage() {
                 lastName,
                 // email,
                 pesel,
-                phoneNumber,
-                dateOfBirth : dateOfBirth + "T00:00:00",
+                phoneNumber: formattedPhoneNumber,
+                dateOfBirth: dateOfBirth + "T00:00:00",
                 gender,
                 address,
                 bloodType,
@@ -90,7 +93,7 @@ export default function EditPatientPage() {
             setName(response.data.name)
             setLastName(response.data.lastName)
             setPesel(response.data.pesel)
-            setPhoneNumber(response.data.phoneNumber? response.data.phoneNumber : "" )
+            setPhoneNumber(response.data.phoneNumber ? response.data.phoneNumber : "")
             setDateOfBirth(response.data.dateOfBirth)
             setGender(response.data.gender)
             setAddress(response.data.address)
@@ -108,7 +111,19 @@ export default function EditPatientPage() {
 
     useEffect(() => {
         fetchPatientInfo()
-    },[])
+    }, [])
+
+    const handlePhoneNumberChange = (e) => {
+        let value = e.target.value.replace(/\D/g, "");
+        if (value.length > 9) value = value.slice(0, 9);
+
+        if (value.length > 6) {
+            value = `${value.slice(0, 3)}-${value.slice(3, 6)}-${value.slice(6)}`;
+        } else if (value.length > 3) {
+            value = `${value.slice(0, 3)}-${value.slice(3)}`;
+        }
+        setPhoneNumber(value);
+    };
 
     return (
         <div className="flex w-full justify-center py-10">
@@ -117,7 +132,7 @@ export default function EditPatientPage() {
                 className="card bg-base-200 shadow-xl p-10 w-full max-w-2xl flex flex-col gap-6"
             >
                 <h1 className="text-3xl font-bold text-center mb-2">
-                    Update Patient Informations
+                    Update Patient Information
                 </h1>
 
                 <div className="flex gap-4">
@@ -163,10 +178,11 @@ export default function EditPatientPage() {
                 <div>
                     <label className="font-medium">Phone Number</label>
                     <input
-                        type="phone"
+                        type="tel"
                         value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        onChange={handlePhoneNumberChange}
                         className="input input-bordered w-full"
+                        placeholder="000-000-000"
                     />
                     {errors.phoneNumber && (
                         <p className="text-red-500 text-xs mt-1">{errors.phoneNumber}</p>
@@ -292,7 +308,7 @@ export default function EditPatientPage() {
                 />
 
                 <button type="submit" className="btn btn-success w-full mt-4">
-                    Register
+                    Update
                 </button>
             </form>
         </div>
