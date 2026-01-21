@@ -89,6 +89,12 @@ export default function AdminDashboard() {
                     onClick={() => setActiveModal("registerDoctor")}
                 />
                 <DashboardButton
+                    title="Register Lab"
+                    subtitle="Create Lab Tech Account"
+                    colorClass="border-l-cyan-500 hover:border-cyan-400"
+                    onClick={() => setActiveModal("registerLab")}
+                />
+                <DashboardButton
                     title="Attach Doctor"
                     subtitle="Assign to Existing User"
                     colorClass="border-l-emerald-500 hover:border-emerald-400"
@@ -133,7 +139,8 @@ export default function AdminDashboard() {
                             <form onSubmit={(e) => handleSubmit(e,
                                 activeModal === "registerDoctor" ? "/api/admin/register-doctor" :
                                     activeModal === "attachDoctor" ? "/api/admin/user-doctor" :
-                                        activeModal === "attachPatient" ? "/api/admin/user-patient" : "/api/admin/users"
+                                        activeModal === "attachPatient" ? "/api/admin/user-patient" :
+                                            activeModal === "registerLab" ? "/api/admin/register-lab" : "/api/admin/users"
                             )}>
 
                                 <h3 className="text-2xl font-bold mb-6 text-center">
@@ -178,6 +185,13 @@ export default function AdminDashboard() {
                                             <div className="md:col-span-2">
                                                 <FormInput label="Address" name="address" value={formData.address} onChange={handleChange} />
                                             </div>
+                                        </>
+                                    )}
+
+                                    {activeModal === "registerLab" && (
+                                        <>
+                                            <FormInput label="Name" name="name" value={formData.name} onChange={handleChange} />
+                                            <FormInput label="Email" name="email" type="email" value={formData.email} onChange={handleChange} />
                                         </>
                                     )}
 
