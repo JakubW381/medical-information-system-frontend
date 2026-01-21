@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from "../../util/Axios.js";
 import UsersList from "./UsersList";
+import LogsList from "./LogsList";
 
 
 const FormInput = ({ label, name, type = "text", placeholder, value, onChange }) => (
@@ -115,7 +116,7 @@ export default function AdminDashboard() {
 
             {activeModal && (
                 <div className="modal modal-open backdrop-blur-sm">
-                    <div className={`modal-box bg-base-100 shadow-2xl ${activeModal === "users" ? "max-w-7xl h-[85vh] p-6" : "max-w-2xl"}`}>
+                    <div className={`modal-box bg-base-100 shadow-2xl ${activeModal === "users" || activeModal === "logs" ? "max-w-7xl h-[85vh] p-6" : "max-w-2xl"}`}>
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 z-50" onClick={closeModal}>✕</button>
 
                         {activeModal === "users" ? (
@@ -123,12 +124,16 @@ export default function AdminDashboard() {
                                 <h3 className="text-2xl font-bold mb-4">User Management</h3>
                                 <UsersList />
                             </div>
+                        ) : activeModal === "logs" ? (
+                            <div className="h-full flex flex-col">
+                                <h3 className="text-2xl font-bold mb-4">System Logs</h3>
+                                <LogsList />
+                            </div>
                         ) : (
                             <form onSubmit={(e) => handleSubmit(e,
                                 activeModal === "registerDoctor" ? "/api/admin/register-doctor" :
                                     activeModal === "attachDoctor" ? "/api/admin/user-doctor" :
-                                        activeModal === "attachPatient" ? "/api/admin/user-patient" :
-                                            activeModal === "logs" ? "/api/admin/logs" : "/api/admin/users"
+                                        activeModal === "attachPatient" ? "/api/admin/user-patient" : "/api/admin/users"
                             )}>
 
                                 <h3 className="text-2xl font-bold mb-6 text-center">
@@ -176,15 +181,6 @@ export default function AdminDashboard() {
                                         </>
                                     )}
 
-                                    {activeModal === "logs" && (
-                                        <>
-                                            <FormInput label="Search Keyword" name="search" value={formData.search} onChange={handleChange} />
-                                            <FormInput label="Log Type" name="logType" value={formData.logType} onChange={handleChange} />
-                                            <FormInput label="Author ID" name="authorId" value={formData.authorId} onChange={handleChange} />
-                                            <FormInput label="From Date" name="from" type="date" value={formData.from} onChange={handleChange} />
-                                            <FormInput label="To Date" name="to" type="date" value={formData.to} onChange={handleChange} />
-                                        </>
-                                    )}
                                 </div>
 
                                 <div className="modal-action">
