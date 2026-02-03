@@ -1,16 +1,68 @@
-# React + Vite
+# Project Documentation: Medical Information System (Frontend)
+# 🏥 About the Project
+The Medical Information System (HIS) is a modern frontend interface designed for a Hospital Information System class application. It aims to streamline administrative and clinical processes within healthcare facilities, enabling efficient management of patient data, appointments, and medical records.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# 🚀 Technologies
+The project is built using a modern tech stack to ensure performance, scalability, and maintainability:
 
-Currently, two official plugins are available:
+  - Framework: React.js
+  
+  - Language: JS/JSX
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+  - Styling: Tailwind CSS 
+  
+  - API Communication: Axios (handling RESTful requests)
+    
+# 🛠 Key Features (HIS Modules)
+The system is divided into core operational modules:
 
-## React Compiler
+## Administrator Panel:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- User management (Doctors, Nurses, Administrative staff).
 
-## Expanding the ESLint configuration
+- Facility and ward configuration.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Doctor’s Panel:
+
+- View appointment schedules.
+
+- Issuing e-prescriptions and e-referrals.
+
+- Filling out patient medical examination cards.
+
+## Patient Panel:
+
+- Online appointment booking.
+
+- Access to treatment history and lab results.
+
+- Registration/Reception:
+
+- Admitting patients to the system.
+# ⚙️ Installation and Setup
+Prerequisites:
+Node.js (version v16.x or newer)
+npm or yarn
+
+Steps:
+1. Clone the repository:
+
+```Bash
+git clone https://github.com/JakubW381/medical-information-system-frontend.git
+```
+Navigate to the project directory:
+
+```Bash
+cd medical-information-system-frontend
+```
+Install dependencies:
+
+```Bash
+npm install
+```
+Run the application in development mode:
+
+```Bash
+npm start
+```
+The application will be available at: http://localhost:5173
